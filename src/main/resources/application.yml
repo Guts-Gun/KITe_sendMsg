@@ -1,0 +1,19 @@
+server:
+  port: 8021
+spring:
+  writedb:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://yjhome.kro.kr:3306/user?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: qwer1234!
+    hikari:
+      maximum-pool-size: 10
+  readdb:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://yjhome.kro.kr:3306/read?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: qwer1234!
+    hikari:
+      maximum-pool-size: 10
+      jpa:
+        hib
