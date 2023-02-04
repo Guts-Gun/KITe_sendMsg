@@ -1,5 +1,6 @@
 package gutsandgun.kite_sendmsg.service;
 
+import gutsandgun.kite_sendmsg.dto.SendingDto;
 import gutsandgun.kite_sendmsg.entity.read.Sending;
 import gutsandgun.kite_sendmsg.repository.read.ReadSendingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,19 +16,17 @@ public class SendingService {
     ReadSendingRepository readSendingRepository;
 
 
-    @Cacheable(value="test" , key = "#id" )
-    public String getSendingRule(Long id){
-        //redis get 확인용
-        Optional<Sending> value = readSendingRepository.findById(id);
-
-        if(value.isPresent()){
-            return value.get().toString();
-        }
-        else{
-            return "";
-        }
-
+    public SendingDto getSendingToDto(Long id){
+        Sending sending = getSendingEntity(id);
+        SendingDto sendingDto = new SendingDto(sending);
+        return sendingDto;
     }
+
+        //@Cacheable(value="test" , key = "#id" )
+        public Sending getSendingEntity(Long id){
+            Optional<Sending> value = readSendingRepository.findById(id);
+            return value.get();
+        }
 
 
 

@@ -1,15 +1,14 @@
 package gutsandgun.kite_sendmsg.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendingMsgDTO {
+@Getter
+@Setter
+public class SendManagerMsgDTO {
     private Long id;
     private Long sendingId;
     private String sender;

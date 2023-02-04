@@ -1,0 +1,41 @@
+package gutsandgun.kite_sendmsg.dto;
+
+import gutsandgun.kite_sendmsg.entity.read.Sending;
+import gutsandgun.kite_sendmsg.type.SendingRuleType;
+import gutsandgun.kite_sendmsg.type.SendingType;
+import lombok.Data;
+import lombok.ToString;
+
+@Data
+@ToString
+public class SendingDto  {
+    private Long id;
+    private String userId;
+    private SendingRuleType sendingRuleType;
+    private SendingType sendingType;
+    private String replaceYn;
+    private Long totalSending;
+
+    //private Long inputTime;
+    //private Long scheduleTime;
+
+    private String title;
+    private String mediaLink;
+    private String content;
+
+
+    public SendingDto(Sending sending){
+        this.id = sending.getId();
+        this.userId = sending.getUserId();
+        this.sendingRuleType = sending.getSendingRuleType();
+        this.sendingType = sending.getSendingType();
+        this.replaceYn = sending.getReplaceYn();
+        this.totalSending = sending.getTotalSending();
+        this.title = sending.getTitle();
+        this.mediaLink = sending.getMediaLink();
+        this.content = sending.getContent();
+    }
+
+
+
+}
