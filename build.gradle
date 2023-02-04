@@ -31,8 +31,21 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign") //Feign
+
     runtimeOnly 'mysql:mysql-connector-java'
 }
+
+ext {
+    set('springCloudVersion', "2022.0.1")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
 
 tasks.named('test') {
     useJUnitPlatform()
