@@ -7,7 +7,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 
-//@EnableCaching
+@EnableCaching
 @EnableFeignClients
 @SpringBootApplication
 @ImportAutoConfiguration({FeignAutoConfiguration.class})

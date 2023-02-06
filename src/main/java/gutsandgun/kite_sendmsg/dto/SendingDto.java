@@ -4,10 +4,12 @@ import gutsandgun.kite_sendmsg.entity.read.Sending;
 import gutsandgun.kite_sendmsg.type.SendingRuleType;
 import gutsandgun.kite_sendmsg.type.SendingType;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
 @ToString
+@NoArgsConstructor
 public class SendingDto  {
     private Long id;
     private String userId;
@@ -30,7 +32,7 @@ public class SendingDto  {
         this.sendingRuleType = sending.getSendingRuleType();
         this.sendingType = sending.getSendingType();
         this.replaceYn = sending.getReplaceYn();
-        this.totalSending = sending.getTotalSending();
+        this.totalSending = sending.getTotalMessage();
         this.title = sending.getTitle();
         this.mediaLink = sending.getMediaLink();
         this.content = sending.getContent();

@@ -25,9 +25,6 @@ public class Consumer {
     @Autowired
     private SendingService sendingService;
 
-    //redis
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
     //api
     @Autowired
     private SmsFeignClient smsFeignClient;
