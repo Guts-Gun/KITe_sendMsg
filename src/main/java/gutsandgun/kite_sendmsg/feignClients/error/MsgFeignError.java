@@ -33,11 +33,10 @@ public class MsgFeignError implements ErrorDecoder {
                 for(ErrorCode c : ErrorCode.values()){
                     if(message.getCode().equals(c.getCode())){
                         log.info("error code : {}" , c.getCode());
-                        return new Exception(c.getCode());
+                        return new BrokerErrorException(c.getCode());
                     }
                 }
         }
-
         return null;
     }
 }

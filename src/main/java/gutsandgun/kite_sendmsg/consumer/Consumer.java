@@ -1,12 +1,15 @@
 package gutsandgun.kite_sendmsg.consumer;
 
 
-import gutsandgun.kite_sendmsg.dto.SendingDto;
-import gutsandgun.kite_sendmsg.dto.BrokerMsgDTO;
-import gutsandgun.kite_sendmsg.dto.SendManagerMsgDTO;
+import gutsandgun.kite_sendmsg.dto.*;
 import gutsandgun.kite_sendmsg.feignClients.SmsFeignClient;
+import gutsandgun.kite_sendmsg.feignClients.error.BrokerErrorException;
+import gutsandgun.kite_sendmsg.feignClients.error.ErrorCode;
 import gutsandgun.kite_sendmsg.service.SendingService;
+import gutsandgun.kite_sendmsg.type.FailReason;
+import gutsandgun.kite_sendmsg.type.SendingStatus;
 import gutsandgun.kite_sendmsg.type.SendingType;
+import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -73,18 +76,40 @@ public class Consumer {
 
         //3.api send
         boolean brokerSendSuccess=true;
+        BrokerRequestLogDTO brokerRequestLogDTO;
+        BrokerResponseLogDTO brokerResponseLogDTO;
         try {
             log.info("Send brokder: {}",brokerMsgDTO);
+            brokerRequestLogDTO = new BrokerRequestLogDTO(1L,sendingDto,sendManagerMsgDTO);
+            log.info("log: "+ brokerRequestLogDTO.toString());
+            log.info("-----------------------------");
             ResponseEntity<Long> response = smsFeignClient.sendSms(brokerMsgDTO);
         }
-        catch (Exception e){
-            System.out.println("Response broker - Error:" + e.getMessage());
+        catch (BrokerErrorException e){
+            System.out.println(e);
             brokerSendSuccess = false;
-
-            //1.중계사 대체 발송
-            //2.수신거부/전화번호 없음 로그 기록
+            log.info("Response broker isSuccess:{}",brokerSendSuccess);
+            System.out.println("Error:" + e.getMessage());
+            brokerResponseLogDTO = new BrokerResponseLogDTO(1L,SendingStatus.FAIL, sendingDto,sendManagerMsgDTO);
+            if(e.getMessage().equals(ErrorCode.BAD_REQUEST.getCode())){
+                //1.중계사 대체 발송
+                brokerResponseLogDTO.setFailReason(FailReason.BAD_REQUEST);
+                log.info("log: "+brokerResponseLogDTO.toString());
+                //!!대체 발송 처리!
+            }
+            else if(e.getMessage().equals(ErrorCode.INVALID_PHONE.getCode())){
+                //2.수신거부/전화번호 없음 로그 기록
+                brokerResponseLogDTO.setFailReason(FailReason.INVALID_PHONE);
+                log.info("log: "+brokerResponseLogDTO.toString());
+            }
+            //other오류도 처리해야하는지?
         }
-        log.info("Response broker:{}",brokerSendSuccess);
+        log.info("Response broker isSuccess:{}",brokerSendSuccess);
+        System.out.println("Success00000");
+        if(brokerSendSuccess==true){
+            brokerResponseLogDTO = new BrokerResponseLogDTO(1L,SendingStatus.COMPLETE, sendingDto,sendManagerMsgDTO);
+            log.info("log: "+brokerResponseLogDTO.toString());
+        }
         log.info("============================");
     }
 
