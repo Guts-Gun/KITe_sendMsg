@@ -18,6 +18,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+
 @Component
 public class Consumer {
     private static final Logger log = LoggerFactory.getLogger(Consumer.class);
@@ -41,10 +43,13 @@ public class Consumer {
         //2.broker msg(새로 만들기)
         //2-1.sending 정보 얻기
         System.out.println(sendManagerMsgDTO.getSendingId());
+        long beforeTime = System.currentTimeMillis();
         SendingDto sendingDto = sendingService.getSendingToDto(sendManagerMsgDTO.getSendingId());
+        long afterTime = System.currentTimeMillis();
+        long secDiffTime = (afterTime - beforeTime);
+        log.info("처리 속도(using cache) : "+secDiffTime);
         log.info("sending 정보: {}",sendingDto);
         log.info("-----------------------------");
-
         //2-2.replace==yes일때 message합치기
             //지금은 이름만 message의 %고객명% 부분에 name넣기
         String content = sendingDto.getContent();
@@ -55,14 +60,12 @@ public class Consumer {
 
         //2-3.초과 처리
         //sms일때 sms bytes 수 > 80
-        log.info("문자 자리수: {}",content.length());
-        log.info("문자 bytes: {}",content.getBytes().length);
-        if(sendingDto.getSendingType()==SendingType.SMS && content.length() >= 40){
-            content = content.substring(0,40-1);
+        if(sendingDto.getSendingType()==SendingType.SMS) {
+            content = sliceMsg(content,160);
         }
         //mms일때 lms bytes 수 > 2000
-        if(sendingDto.getSendingType()==SendingType.MMS && content.getBytes().length >= 1000){
-            content = content.substring(0,1000-1);
+        if(sendingDto.getSendingType()==SendingType.MMS){
+            content = sliceMsg(content,2000);
         }
         log.info("Message exceed: {}",content);
         log.info("-----------------------------");
@@ -120,8 +123,35 @@ public class Consumer {
         log.info("LG message: {}",sendManagerMsgDTO);
     }
 
+    String sliceMsg(String msg,int byteLength){
+        int bytes = 0;
+        if (msg == null) {
+            return msg;
+        } else {
+            char[] strChar = msg.toCharArray();
 
+            int charLength = 0;
+            for (int i = 0; i < strChar.length; i++) {
+                int code = strChar[i];
 
+                // 2bytes
+                if (code >= 128) bytes += 2;
+                    // 1bytes
+                else bytes +=1;
 
+                if(bytes < byteLength){
+                    charLength += 1;
+                }
+                else{
+                    log.info("문자 자리수: {}",charLength);
+                    log.info("문자 bytes: {}",bytes);
+                   return msg.substring(0,charLength);
+                }
+            }
+            log.info("문자 자리수: {}",charLength);
+            log.info("문자 bytes: {}",bytes);
+            return msg;
+        }
+    }
 
 }
