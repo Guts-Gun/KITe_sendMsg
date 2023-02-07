@@ -1,46 +1,39 @@
 package gutsandgun.kite_sendmsg.entity.read;
 
 import gutsandgun.kite_sendmsg.entity.BaseTimeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-/**
- * 수신 차단 테이블
- */
 @Entity
 @Getter
 @Setter
 @Where(clause = "is_deleted = false")
-@SQLDelete(sql = "UPDATE sending_block SET is_deleted=true WHERE id = ?")
-public class SendingBlock extends BaseTimeEntity {
+@SQLDelete(sql = "UPDATE message_template SET is_deleted=true WHERE id = ?")
+@Table(name = "message_template")
+@NoArgsConstructor
+@AllArgsConstructor
+public class MessageTemplate extends BaseTimeEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
 
-	/**
-	 * 수신 차단할 발신자 주소
-	 */
-	@Comment("수신 차단할 발신자 주소")
-	private String sender;
+	@Column(name = "fk_user_id")
+	private String userId;
 
-	/**
-	 * 수신 차단 할 수신자 주소
-	 */
-	@Comment("수신 차단할 수신자 주소")
-	private String receiver;
+	private String title;
 
-	/**
-	 * 차단 시간
-	 */
-	@Comment("차단 시간")
-	private Long blockTime;
+	private String content;
 
 	@ColumnDefault("false")
 	private Boolean isDeleted = false;
@@ -52,4 +45,5 @@ public class SendingBlock extends BaseTimeEntity {
 	@Comment("수정자")
 	@Column(name = "mod_id", length = 20)
 	private String modId;
+
 }
