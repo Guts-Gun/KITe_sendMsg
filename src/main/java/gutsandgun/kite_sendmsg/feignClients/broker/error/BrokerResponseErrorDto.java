@@ -1,4 +1,4 @@
-package gutsandgun.kite_sendmsg.feignClients.error;
+package gutsandgun.kite_sendmsg.feignClients.broker.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

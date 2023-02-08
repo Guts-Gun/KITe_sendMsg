@@ -1,16 +1,9 @@
 package gutsandgun.kite_sendmsg.dto;
 
-import gutsandgun.kite_sendmsg.consumer.Consumer;
-import gutsandgun.kite_sendmsg.feignClients.error.ErrorCode;
 import gutsandgun.kite_sendmsg.type.FailReason;
 import gutsandgun.kite_sendmsg.type.SendingStatus;
 import gutsandgun.kite_sendmsg.type.SendingType;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 

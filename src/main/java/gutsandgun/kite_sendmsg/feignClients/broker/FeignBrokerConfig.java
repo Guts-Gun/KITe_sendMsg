@@ -1,9 +1,8 @@
-package gutsandgun.kite_sendmsg.feignClients;
+package gutsandgun.kite_sendmsg.feignClients.broker;
 
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;
-import gutsandgun.kite_sendmsg.feignClients.error.MsgFeignError;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -13,15 +12,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
-@Configuration
-public class FeignConfig {
+public class FeignBrokerConfig {
     private ObjectFactory<HttpMessageConverters> messageConverters;
-
     @Bean
     Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
     }
-
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
@@ -29,11 +25,9 @@ public class FeignConfig {
             requestTemplate.header("Accept", "application/json");
         };
     }
-
-
     @Bean
     public ErrorDecoder errorDecoder() {
-        return new MsgFeignError();
+        return new FeignBrokerError();
     }
 
     @Bean
