@@ -1,8 +1,6 @@
 package gutsandgun.kite_sendmsg.service;
 
-import gutsandgun.kite_sendmsg.consumer.Consumer;
 import gutsandgun.kite_sendmsg.dto.*;
-import gutsandgun.kite_sendmsg.entity.read.Broker;
 import gutsandgun.kite_sendmsg.entity.read.Sending;
 import gutsandgun.kite_sendmsg.feignClients.SendingFeignClient;
 import gutsandgun.kite_sendmsg.feignClients.SmsFeignClient;
