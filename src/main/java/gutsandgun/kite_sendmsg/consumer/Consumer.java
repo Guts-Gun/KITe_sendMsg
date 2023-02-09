@@ -2,19 +2,11 @@ package gutsandgun.kite_sendmsg.consumer;
 
 
 import gutsandgun.kite_sendmsg.dto.*;
-import gutsandgun.kite_sendmsg.feignClients.SendingFeignClient;
-import gutsandgun.kite_sendmsg.feignClients.SmsFeignClient;
-import gutsandgun.kite_sendmsg.feignClients.broker.error.BrokerErrorException;
-import gutsandgun.kite_sendmsg.feignClients.broker.error.ErrorCode;
 import gutsandgun.kite_sendmsg.service.SendingService;
-import gutsandgun.kite_sendmsg.type.FailReason;
-import gutsandgun.kite_sendmsg.type.SendingStatus;
-import gutsandgun.kite_sendmsg.type.SendingType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Component
