@@ -17,8 +17,10 @@ public class Consumer {
     @Autowired
     private SendingService sendingService;
 
+    // SKT
     @RabbitListener(queues = "${rabbitmq.routing.key.queue1}")
     public void consumeSKT(SendManagerMsgDTO sendManagerMsgDTO){
+        Long brokerId = 1L;
         log.info("============================");
         //1.rabbitmq consumer - sendManager msg
         log.info("SKT message: {}",sendManagerMsgDTO);
@@ -36,12 +38,14 @@ public class Consumer {
         log.info("-----------------------------");
 
         //4.api send
-        sendingService.sendBroker(1L,brokerMsgDTO,sendingDto,sendManagerMsgDTO);
+        sendingService.sendBroker(brokerId,brokerMsgDTO,sendingDto,sendManagerMsgDTO);
         log.info("============================");
     }
 
+    // KT
     @RabbitListener(queues = "${rabbitmq.routing.key.queue2}")
     public void consumeKT(SendManagerMsgDTO sendManagerMsgDTO){
+        Long brokerId = 2L;
         log.info("============================");
         //1.rabbitmq consumer - sendManager msg
         log.info("KT message: {}",sendManagerMsgDTO);
@@ -59,13 +63,15 @@ public class Consumer {
         log.info("-----------------------------");
 
         //4.api send
-        sendingService.sendBroker(2L,brokerMsgDTO,sendingDto,sendManagerMsgDTO);
+        sendingService.sendBroker(brokerId,brokerMsgDTO,sendingDto,sendManagerMsgDTO);
         log.info("============================");
 
     }
 
+    // LG
     @RabbitListener(queues = "${rabbitmq.routing.key.queue3}")
     public void consumeLG(SendManagerMsgDTO sendManagerMsgDTO){
+        Long brokerId = 3L;
         log.info("============================");
         //1.rabbitmq consumer - sendManager msg
         log.info("LG message: {}",sendManagerMsgDTO);
@@ -83,7 +89,7 @@ public class Consumer {
         log.info("-----------------------------");
 
         //4.api send
-        sendingService.sendBroker(3L,brokerMsgDTO,sendingDto,sendManagerMsgDTO);
+        sendingService.sendBroker(brokerId,brokerMsgDTO,sendingDto,sendManagerMsgDTO);
         log.info("============================");
     }
 

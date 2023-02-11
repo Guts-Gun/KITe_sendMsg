@@ -48,6 +48,10 @@ public class BrokerResponseLogDTO {
                 ", time=" + time;
     }
 
+    public void setTime() {
+        this.time = new Date().getTime();
+    }
+
     //직접입력용
     /*
     public BrokerResponseLogDTO(SendingStatus success, FailReason failReason,Long sendingId, SendingType sendingType,Long  brokerId,Long txId){

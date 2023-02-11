@@ -1,11 +1,14 @@
 package gutsandgun.kite_sendmsg.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gutsandgun.kite_sendmsg.dto.*;
+import gutsandgun.kite_sendmsg.entity.read.Broker;
 import gutsandgun.kite_sendmsg.entity.read.Sending;
 import gutsandgun.kite_sendmsg.feignClients.SendingFeignClient;
 import gutsandgun.kite_sendmsg.feignClients.SmsFeignClient;
 import gutsandgun.kite_sendmsg.feignClients.broker.error.BrokerErrorException;
 import gutsandgun.kite_sendmsg.feignClients.broker.error.ErrorCode;
+import gutsandgun.kite_sendmsg.repository.read.ReadBrokerRepository;
 import gutsandgun.kite_sendmsg.repository.read.ReadSendingRepository;
 import gutsandgun.kite_sendmsg.type.FailReason;
 import gutsandgun.kite_sendmsg.type.SendingStatus;
@@ -25,6 +28,10 @@ public class SendingService {
     //read db
     @Autowired
     ReadSendingRepository readSendingRepository;
+
+    @Autowired
+    ReadBrokerRepository readBrokerRepository;
+
 
     //api
     @Autowired
@@ -93,33 +100,77 @@ public class SendingService {
 
     //4. api send
     public void sendBroker(Long brokerId,BrokerMsgDTO brokerMsgDTO,SendingDto sendingDto, SendManagerMsgDTO sendManagerMsgDTO){
-        boolean brokerSendSuccess = true;
-        BrokerRequestLogDTO brokerRequestLogDTO;
-        BrokerResponseLogDTO brokerResponseLogDTO;
+        boolean firstBrokerSendSuccess = true;
+        BrokerResponseLogDTO firstBrokerResponseLogDTO = new BrokerResponseLogDTO(brokerId, SendingStatus.COMPLETE, sendingDto,sendManagerMsgDTO);
         try {
             log.info("Send brokder: {}",brokerMsgDTO);
-            brokerRequestLogDTO = new BrokerRequestLogDTO(brokerId,sendingDto,sendManagerMsgDTO);
+            BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(brokerId,sendingDto,sendManagerMsgDTO);
             log.info("log: "+ brokerRequestLogDTO.toString());
             log.info("-----------------------------");
             ResponseEntity<Long> response = smsFeignClient.sendSms(brokerMsgDTO);
         }
         catch (BrokerErrorException e){
             System.out.println(e);
-            brokerSendSuccess = false;
-            log.info("Response broker isSuccess:{}",brokerSendSuccess);
+            firstBrokerSendSuccess = false;
+            log.info("*******************************************");
             System.out.println("Error:" + e.getMessage());
-            brokerResponseLogDTO = new BrokerResponseLogDTO(brokerId, SendingStatus.FAIL, sendingDto,sendManagerMsgDTO);
+            firstBrokerResponseLogDTO.setTime();
+            firstBrokerResponseLogDTO.setSuccess(SendingStatus.FAIL);
             if(e.getMessage().equals(ErrorCode.BAD_REQUEST.getCode())){
                 //1.중계사 대체 발송
-                brokerResponseLogDTO.setFailReason(FailReason.BAD_REQUEST);
-                log.info("log: "+brokerResponseLogDTO.toString());
-                //!!대체 발송 처리!
+                firstBrokerResponseLogDTO.setFailReason(FailReason.BAD_REQUEST);
+                log.info("log: "+firstBrokerResponseLogDTO.toString());
+
+                List<BrokerDTO> brokerDTOList = getMsgBrokerList();
+                ArrayList<Boolean> brokerResponseList = new ArrayList<Boolean>();
+                log.info("brokerList:{}",brokerDTOList);
+                log.info("-----------------------------");
+                //대체 발송 처리(sending queue)
+                for (BrokerDTO b : brokerDTOList){
+                    if(brokerId == b.getId()){
+                        brokerResponseList.add(false);
+                    }
+                    else{
+                        Boolean alternativeBrokerSuccess = true;
+                        try{
+                            log.info("Replace send broker: {}", b.getId());
+                            BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(),sendingDto,sendManagerMsgDTO);
+                            log.info("log: "+ brokerRequestLogDTO.toString());
+                            log.info("-----------------------------");
+                            //client어케 보내지 ?? 음;;
+                            ResponseEntity<Long> response = smsFeignClient.sendSms(brokerMsgDTO);
+                        }
+                        catch (BrokerErrorException ee){
+                            System.out.println(ee);
+                            System.out.println("Error:" + ee.getMessage());
+                            if(e.getMessage().equals(ErrorCode.BAD_REQUEST.getCode())){
+                                alternativeBrokerSuccess = false;
+                                BrokerResponseLogDTO brokerResponseLogDTOForAlternative = new BrokerResponseLogDTO(b.getId(), SendingStatus.FAIL, sendingDto,sendManagerMsgDTO);
+                                brokerResponseLogDTOForAlternative.setFailReason(FailReason.BAD_REQUEST);
+                                log.info("log: "+brokerResponseLogDTOForAlternative.toString());
+                                log.info("-----------------------------");
+                            }
+                        }
+                        finally {
+                            if(alternativeBrokerSuccess){
+                                brokerResponseList.add(true);
+                                BrokerResponseLogDTO alternativeBrokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(),SendingStatus.COMPLETE, sendingDto,sendManagerMsgDTO);
+                                log.info("log: "+alternativeBrokerResponseLogDTO.toString());
+                                log.info("-----------------------------");
+                                break;
+                            }
+                            else{
+                                brokerResponseList.add(false);
+                            }
+                        }
+                    }
+                }
             }
             else if(e.getMessage().equals(ErrorCode.INVALID_PHONE.getCode())){
                 //2.수신거부/전화번호 없음 로그 기록
-                brokerResponseLogDTO.setFailReason(FailReason.INVALID_PHONE);
-                log.info("log: "+brokerResponseLogDTO.toString());
-                //대체 발송api전송
+                firstBrokerResponseLogDTO.setFailReason(FailReason.INVALID_PHONE);
+                log.info("log: "+firstBrokerResponseLogDTO.toString());
+                //이메일 대체 발송api전송
                 log.info("replace Check : {}", sendingDto.getReplaceYn());
                 if(sendingDto.getReplaceYn().equals("Y")){
                     ReplaceSendingBodyDTO replaceSendingBodyDTO = new ReplaceSendingBodyDTO(3L,1L);
@@ -129,12 +180,14 @@ public class SendingService {
                 }
             }
             //other오류도 처리해야하는지?
+            log.info("*******************************************");
         }
-        log.info("Response broker isSuccess:{}",brokerSendSuccess);
-        System.out.println("Success00000");
-        if(brokerSendSuccess==true){
-            brokerResponseLogDTO = new BrokerResponseLogDTO(brokerId,SendingStatus.COMPLETE, sendingDto,sendManagerMsgDTO);
-            log.info("log: "+brokerResponseLogDTO.toString());
+        finally {
+            if(firstBrokerSendSuccess){
+                firstBrokerResponseLogDTO.setTime();
+                log.info("log: "+firstBrokerResponseLogDTO.toString());
+                log.info("-----------------------------");
+            }
         }
     }
 
@@ -161,5 +214,16 @@ public class SendingService {
             Optional<Sending> value = readSendingRepository.findById(id);
             return value.get();
         }
+
+
+    public List<BrokerDTO> getMsgBrokerList(){
+        List<Broker> BrokerList = readBrokerRepository.findBySendingType(SendingType.SMS);
+        List<BrokerDTO> brokerDTOList = new ArrayList<>();
+        BrokerList.forEach(broker -> {
+            brokerDTOList.add(mapper.convertValue(broker,BrokerDTO.class));
+        });
+
+        return brokerDTOList;
+    }
 
 }
