@@ -6,6 +6,11 @@ spring:
     port: 11005
     username: gutsandgun
     password: gutsandgun
+#    host: 172.16.226.148
+#    port: 5672
+#    username: solbitest
+#    password: solbitest1212!
+    virtual-host: gutsandgun
   redis:
     lettuce:
       pool:
@@ -18,13 +23,14 @@ spring:
   readdb:
     driver-class-name: com.mysql.cj.jdbc.Driver
     jdbc-url: jdbc:mysql://gutsandgun.kro.kr:12002/read?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    #jdbc-url: jdbc:mysql://yjhome.kro.kr:3306/read?usessl=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: gutsandgun
     hikari:
       maximum-pool-size: 10
   jpa:
     hibernate:
-      ddl-auto: none  # option type: create, create-drop, update, validate, none
+      ddl-auto: update   # option type: create, create-drop, update, validate, none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 
@@ -62,3 +68,4 @@ rabbitmq:
 feign:
   url :
     broker-dummy : localhost:8081
+    sending : localhost:8004

@@ -30,6 +30,9 @@ public class RabbitmqConfig {
     @Value("${spring.rabbitmq.password}")
     private String password;
 
+    @Value("${spring.rabbitmq.virtual-host}")
+    private String vhost;
+
 
 
     @Value("${rabbitmq.queue1.name}")
@@ -126,6 +129,7 @@ public class RabbitmqConfig {
         connectionFactory.setPort(port);
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
+        connectionFactory.setVirtualHost(vhost);
         return connectionFactory;
     }
 
