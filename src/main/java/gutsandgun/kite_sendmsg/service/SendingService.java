@@ -20,10 +20,18 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SendingService {
+    //borker mapping
+    Map<Long, String> msgBroker = new HashMap<>() {{
+        put(1L, "SKT");
+        put(2L, "KT");
+        put(3L, "LG");
+    }};
+    @Autowired
+    ObjectMapper mapper = new ObjectMapper();
     private static final Logger log = LoggerFactory.getLogger(SendingService.class);
     //read db
     @Autowired
@@ -107,7 +115,7 @@ public class SendingService {
             BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(brokerId,sendingDto,sendManagerMsgDTO);
             log.info("log: "+ brokerRequestLogDTO.toString());
             log.info("-----------------------------");
-            ResponseEntity<Long> response = smsFeignClient.sendSms(brokerMsgDTO);
+            ResponseEntity<Long> response = smsFeignClient.sendSms(msgBroker.get(brokerId),brokerMsgDTO);
         }
         catch (BrokerErrorException e){
             System.out.println(e);
@@ -138,7 +146,7 @@ public class SendingService {
                             log.info("log: "+ brokerRequestLogDTO.toString());
                             log.info("-----------------------------");
                             //client어케 보내지 ?? 음;;
-                            ResponseEntity<Long> response = smsFeignClient.sendSms(brokerMsgDTO);
+                            ResponseEntity<Long> response = smsFeignClient.sendSms(msgBroker.get(brokerId),brokerMsgDTO);
                         }
                         catch (BrokerErrorException ee){
                             System.out.println(ee);
