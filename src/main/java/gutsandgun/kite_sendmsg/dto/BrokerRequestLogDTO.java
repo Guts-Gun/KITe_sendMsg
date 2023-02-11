@@ -17,12 +17,15 @@ public class BrokerRequestLogDTO {
 
     Long time = new Date().getTime();
 
+    String content;
+
     //객체 용
-    public BrokerRequestLogDTO(Long brokerId,SendingDto sendingDto,SendManagerMsgDTO sendManagerMsgDTO){
+    public BrokerRequestLogDTO(Long brokerId,SendingDto sendingDto,BrokerMsgDTO brokerMsgDTO,SendManagerMsgDTO sendManagerMsgDTO){
         this.sendingId = sendingDto.getId();
         this.sendingType = sendingDto.getSendingType();
         this.brokerId = brokerId;
         this.TXId = sendManagerMsgDTO.getId();
+        this.content = brokerMsgDTO.getContent();
     }
 
     @Override
@@ -35,14 +38,4 @@ public class BrokerRequestLogDTO {
                 ", TXId=" + TXId +
                 ", time=" + time;
     }
-
-    //직접 입력 용
-    /*
-    public BrokerRequestLogDTO(Long sendingId, SendingType sendingType, Long brokerId, Long txId){
-        this.sendingId = sendingId;
-        this.sendingType = sendingType;
-        this.brokerId = brokerId;
-        this.TXId = txId;
-    }
-     */
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gutsandgun.kite_sendmsg.dto.*;
 import gutsandgun.kite_sendmsg.entity.read.Broker;
 import gutsandgun.kite_sendmsg.entity.read.Sending;
+import gutsandgun.kite_sendmsg.exception.ConsumerException;
 import gutsandgun.kite_sendmsg.feignClients.SendingFeignClient;
 import gutsandgun.kite_sendmsg.feignClients.SmsFeignClient;
 import gutsandgun.kite_sendmsg.feignClients.broker.error.BrokerErrorException;
@@ -112,7 +113,7 @@ public class SendingService {
         BrokerResponseLogDTO firstBrokerResponseLogDTO = new BrokerResponseLogDTO(brokerId, SendingStatus.COMPLETE, sendingDto,sendManagerMsgDTO);
         try {
             log.info("Send brokder: {}",brokerMsgDTO);
-            BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(brokerId,sendingDto,sendManagerMsgDTO);
+            BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(brokerId,sendingDto,brokerMsgDTO,sendManagerMsgDTO);
             log.info("log: "+ brokerRequestLogDTO.toString());
             log.info("-----------------------------");
             ResponseEntity<Long> response = smsFeignClient.sendSms(msgBroker.get(brokerId),brokerMsgDTO);
@@ -142,10 +143,9 @@ public class SendingService {
                         Boolean alternativeBrokerSuccess = true;
                         try{
                             log.info("Replace send broker: {}", b.getId());
-                            BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(),sendingDto,sendManagerMsgDTO);
+                            BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(),sendingDto,brokerMsgDTO,sendManagerMsgDTO);
                             log.info("log: "+ brokerRequestLogDTO.toString());
                             log.info("-----------------------------");
-                            //client어케 보내지 ?? 음;;
                             ResponseEntity<Long> response = smsFeignClient.sendSms(msgBroker.get(brokerId),brokerMsgDTO);
                         }
                         catch (BrokerErrorException ee){
@@ -219,8 +219,10 @@ public class SendingService {
     }
 
         public Sending getSendingEntity(Long id){
-            Optional<Sending> value = readSendingRepository.findById(id);
-            return value.get();
+            //Optional<Sending> value = readSendingRepository.findById(id);
+            //return value.get();
+            Sending value = readSendingRepository.findById(20L).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
+            return value;
         }
 
 
