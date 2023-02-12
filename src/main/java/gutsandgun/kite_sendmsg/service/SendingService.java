@@ -221,7 +221,7 @@ public class SendingService {
         public Sending getSendingEntity(Long id){
             //Optional<Sending> value = readSendingRepository.findById(id);
             //return value.get();
-            Sending value = readSendingRepository.findById(20L).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
+            Sending value = readSendingRepository.findById(id).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
             return value;
         }
 
