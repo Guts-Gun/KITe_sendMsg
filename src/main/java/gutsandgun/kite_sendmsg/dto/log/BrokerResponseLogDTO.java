@@ -1,5 +1,8 @@
-package gutsandgun.kite_sendmsg.dto;
+package gutsandgun.kite_sendmsg.dto.log;
 
+import gutsandgun.kite_sendmsg.dto.sendMsg.SendManagerMsgDTO;
+import gutsandgun.kite_sendmsg.dto.SendingDto;
+import gutsandgun.kite_sendmsg.dto.sendMsg.SendMsgProceessingDTO;
 import gutsandgun.kite_sendmsg.type.FailReason;
 import gutsandgun.kite_sendmsg.type.SendingStatus;
 import gutsandgun.kite_sendmsg.type.SendingType;
@@ -23,12 +26,13 @@ public class BrokerResponseLogDTO {
     Long time = new Date().getTime();
 
     //객체 용
-    public BrokerResponseLogDTO(Long brokerId,SendingStatus success,SendingDto sendingDto, SendManagerMsgDTO sendManagerMsgDTO){
+    public BrokerResponseLogDTO( Long brokerId, SendingStatus success, SendMsgProceessingDTO sendMsgProceessingDTO){
         this.success = success;
-        this.sendingId = sendingDto.getId();
-        this.sendingType = sendingDto.getSendingType();
         this.brokerId = brokerId;
-        this.TXId = sendManagerMsgDTO.getId();
+
+        this.sendingId = sendMsgProceessingDTO.getSendingId();
+        this.sendingType = sendMsgProceessingDTO.getSendingType();
+        this.TXId = sendMsgProceessingDTO.getTxId();
     }
 
     public void setFailReason(FailReason failReason) {
@@ -48,21 +52,7 @@ public class BrokerResponseLogDTO {
                 ", time=" + time;
     }
 
-    public void setTime() {
-        this.time = new Date().getTime();
-    }
 
-    //직접입력용
-    /*
-    public BrokerResponseLogDTO(SendingStatus success, FailReason failReason,Long sendingId, SendingType sendingType,Long  brokerId,Long txId){
-        this.success = success;
-        this.failReason = failReason;
-        this.sendingId = sendingId;
-        this.sendingType = sendingType;
-        this.brokerId = brokerId;
-        this.TXId = txId;
-    }
-     */
 
 }
 

@@ -1,5 +1,9 @@
-package gutsandgun.kite_sendmsg.dto;
+package gutsandgun.kite_sendmsg.dto.log;
 
+import gutsandgun.kite_sendmsg.dto.sendMsg.BrokerMsgDTO;
+import gutsandgun.kite_sendmsg.dto.sendMsg.SendManagerMsgDTO;
+import gutsandgun.kite_sendmsg.dto.SendingDto;
+import gutsandgun.kite_sendmsg.dto.sendMsg.SendMsgProceessingDTO;
 import gutsandgun.kite_sendmsg.type.SendingType;
 import lombok.Data;
 
@@ -20,12 +24,13 @@ public class BrokerRequestLogDTO {
     String content;
 
     //객체 용
-    public BrokerRequestLogDTO(Long brokerId,SendingDto sendingDto,BrokerMsgDTO brokerMsgDTO,SendManagerMsgDTO sendManagerMsgDTO){
-        this.sendingId = sendingDto.getId();
-        this.sendingType = sendingDto.getSendingType();
+    public BrokerRequestLogDTO( Long brokerId,SendMsgProceessingDTO sendMsgProceessingDTO){
         this.brokerId = brokerId;
-        this.TXId = sendManagerMsgDTO.getId();
-        this.content = brokerMsgDTO.getContent();
+
+        this.sendingId = sendMsgProceessingDTO.getSendingId();
+        this.sendingType = sendMsgProceessingDTO.getSendingType();
+        this.TXId = sendMsgProceessingDTO.getTxId();
+        this.content = sendMsgProceessingDTO.getBrokerMsgDTO().getContent();
     }
 
     @Override

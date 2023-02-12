@@ -1,8 +1,7 @@
-package gutsandgun.kite_sendmsg.dto;
+package gutsandgun.kite_sendmsg.dto.log;
 
-import gutsandgun.kite_sendmsg.type.FailReason;
-import gutsandgun.kite_sendmsg.type.SendingStatus;
-import gutsandgun.kite_sendmsg.type.SendingType;
+import gutsandgun.kite_sendmsg.dto.sendMsg.SendManagerMsgDTO;
+import gutsandgun.kite_sendmsg.dto.sendMsg.SendMsgProceessingDTO;
 import lombok.Data;
 
 import java.util.Date;
@@ -18,10 +17,10 @@ public class MissingSendingIdLogDTO {
     Long TXId;
     Long time = new Date().getTime();
 
-    public MissingSendingIdLogDTO(Long brokerId,SendManagerMsgDTO sendManagerMsgDTO){
-        this.sendingId = sendManagerMsgDTO.getSendingId();
-        this.brokerId = brokerId;
-        this.TXId = sendManagerMsgDTO.getId();
+    public MissingSendingIdLogDTO(SendMsgProceessingDTO sendMsgProceessingDTO){
+        this.sendingId = sendMsgProceessingDTO.getSendingId();
+        this.brokerId = sendMsgProceessingDTO.getBrokerId();
+        this.TXId = sendMsgProceessingDTO.getTxId();
     }
 
     @Override

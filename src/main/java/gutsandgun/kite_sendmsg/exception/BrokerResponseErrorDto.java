@@ -1,4 +1,4 @@
-package gutsandgun.kite_sendmsg.feignClients.broker.error;
+package gutsandgun.kite_sendmsg.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+//rabbit mq consumer에서만 사용하는 이메일 대체 전송용 body dto
 public class BrokerResponseErrorDto {
     String code;
     String message;

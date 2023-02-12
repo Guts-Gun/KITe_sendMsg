@@ -1,6 +1,6 @@
 package gutsandgun.kite_sendmsg.feignClients;
 
-import gutsandgun.kite_sendmsg.dto.BrokerMsgDTO;
+import gutsandgun.kite_sendmsg.dto.sendMsg.BrokerMsgDTO;
 import gutsandgun.kite_sendmsg.feignClients.broker.FeignBrokerConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;

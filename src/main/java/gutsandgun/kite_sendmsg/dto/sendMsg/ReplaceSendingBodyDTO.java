@@ -1,4 +1,4 @@
-package gutsandgun.kite_sendmsg.dto;
+package gutsandgun.kite_sendmsg.dto.sendMsg;
 
 import lombok.*;
 

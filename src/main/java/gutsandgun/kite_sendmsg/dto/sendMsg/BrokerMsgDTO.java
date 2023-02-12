@@ -1,5 +1,6 @@
-package gutsandgun.kite_sendmsg.dto;
+package gutsandgun.kite_sendmsg.dto.sendMsg;
 
+import gutsandgun.kite_sendmsg.dto.SendingDto;
 import lombok.*;
 
 @Builder
@@ -14,11 +15,12 @@ public class BrokerMsgDTO {
     private String content;
     private String mediaLink;
 
-    public BrokerMsgDTO(SendingDto sendingDto, SendManagerMsgDTO sendManagerMsgDTO){
+    public BrokerMsgDTO(String content,SendingDto sendingDto, SendManagerMsgDTO sendManagerMsgDTO){
         this.sender = sendManagerMsgDTO.getSender();
         this.receiver = sendManagerMsgDTO.getReceiver();
         this.title = sendingDto.getTitle();
         //CONTENT는 문자열 치환후!
+        this.content = content;
         this.mediaLink = sendingDto.getMediaLink();
     }
 }
