@@ -40,7 +40,9 @@ public class SendMsgProceessingDTO {
         //지금은 이름만 message의 %고객명% 부분에 name넣기
         String content = sendingDto.getContent();
         log.info("3. Message: {}",content);
-        content = content.replace("%고객명%", sendManagerMsgDTO.getName());
+        if(sendManagerMsgDTO.getName()!=null){
+            content = content.replace("%고객명%", sendManagerMsgDTO.getName());
+        }
         log.info("문자열 치환: {}",content);
 
         //2.초과 처리

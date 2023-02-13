@@ -67,13 +67,20 @@ public class SendingService {
             //4.발송
             BrokerResponseLogDTO brokerResponseLogDTO = sendBroker(sendMsgProceessingDTO);
             //5.대체발송 (브로커/이메일)
-            if(brokerResponseLogDTO.getSuccess().equals(SendingStatus.FAIL) && sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("Y")){
+            if(brokerResponseLogDTO.getSuccess().equals(SendingStatus.FAIL)){
                 switch (brokerResponseLogDTO.getFailReason()){
                     case BAD_REQUEST :
                         alternativeSendBroker(sendMsgProceessingDTO);
                         break;
                     case INVALID_PHONE:
-                        alternativeSendEmail(sendMsgProceessingDTO);
+                        log.info(sendMsgProceessingDTO.getSendingDto().getReplaceYn());
+                        if(sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("Y")){
+                            log.info("플랫폼 대체 발송 허가");
+                            alternativeSendEmail(sendMsgProceessingDTO);
+                        }
+                        if(sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("N")){
+                            log.info("플랫폼 대체 발송 X");
+                        }
                         break;
                 }
             }
@@ -100,7 +107,7 @@ public class SendingService {
 
             long afterTime = System.currentTimeMillis();
             long secDiffTime = (afterTime - beforeTime);
-            log.info("2. getSending :{} :",sending.toString());
+            log.info("2. getSendingDto :{} :",sendingDto.toString());
             log.info("처리 속도(using cache) : "+secDiffTime);
 
             return sendingDto;
@@ -113,7 +120,7 @@ public class SendingService {
             try {
                 log.info("4. Send broker: {}",sendMsgProceessingDTO.getBrokerMsgDTO());
                 BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(sendMsgProceessingDTO.getBrokerId(),sendMsgProceessingDTO);
-                log.info("request log: "+ brokerRequestLogDTO.toString());
+                log.info("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
                 ResponseEntity<Long> response = smsFeignClient.sendSms(msgBroker.get(sendMsgProceessingDTO.getBrokerId()),sendMsgProceessingDTO.getBrokerMsgDTO());
             }
             catch (CustomException e){
@@ -131,13 +138,13 @@ public class SendingService {
                 else{
                     //other오류도 처리해야하는지?
                 }
-                log.info("response log: "+ brokerResponseLogDTO.toString());
+                log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 log.info("*******************************************");
             }
             finally {
                 if(brokerResponseLogDTO==null){
                     brokerResponseLogDTO = new BrokerResponseLogDTO(sendMsgProceessingDTO.getBrokerId(), SendingStatus.COMPLETE,sendMsgProceessingDTO);
-                    log.info("response log: "+brokerResponseLogDTO.toString());
+                    log.info("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                 }
             }
             log.info("-----------------------------");
@@ -147,9 +154,9 @@ public class SendingService {
         public void alternativeSendEmail(SendMsgProceessingDTO sendMsgProceessingDTO){
             ReplaceSendingBodyDTO replaceSendingBodyDTO = new ReplaceSendingBodyDTO(sendMsgProceessingDTO.getSendingId(),sendMsgProceessingDTO.getTxId());
             log.info("5-1. 이메일 대체발송");
-            log.info("request: {}",replaceSendingBodyDTO);
+            log.info("api[대체발송] request: {}",replaceSendingBodyDTO);
             ResponseEntity<String> response = sendingFeignClient.sendSms(replaceSendingBodyDTO);
-            log.info("response: {}",response.getStatusCode());
+            log.info("api[대체발송] response: {}",response.getStatusCode());
         }
         public void alternativeSendBroker(SendMsgProceessingDTO sendMsgProceessingDTO){
             log.info("5-2. 중계사 대체발송");
@@ -171,7 +178,7 @@ public class SendingService {
                     try{
                         log.info("대체발송 중계사: {}번-{}", b.getId(),msgBroker.get(b.getId()));
                         BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(),sendMsgProceessingDTO);
-                        log.info("request: "+ brokerRequestLogDTO.toString());
+                        log.info("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
                         ResponseEntity<Long> response = smsFeignClient.sendSms(msgBroker.get(b.getId()),sendMsgProceessingDTO.getBrokerMsgDTO());
                     }
                     catch (CustomException e){
@@ -186,14 +193,14 @@ public class SendingService {
                         else if(e.getErrorCode() == ErrorCode.INVALID_PHONE){
                             brokerResponseLogDTO.setFailReason(FailReason.INVALID_PHONE);
                         }
-                        log.info("response log: "+ brokerResponseLogDTO.toString());
+                        log.info("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                         log.info("*******************************************");
                     }
                     finally {
                         if(alternativeBrokerSuccess){
                             brokerResponseList.add(true);
                             BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(),SendingStatus.COMPLETE,sendMsgProceessingDTO);
-                            log.info("response log: "+ brokerResponseLogDTO.toString());
+                            log.info("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                             break;
                         }
                         else{
