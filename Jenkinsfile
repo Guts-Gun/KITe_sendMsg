@@ -70,6 +70,7 @@ pipeline {
                       url: 'https://github.com/Guts-Gun/KITe_ArgoCD.git',
                       branch: 'main'
 
+              sh "git pull origin main"
               sh "sed -i 's/kite_sendmsg:.*\$/kite_sendmsg:${currentBuild.number}/g' service/sendmsg-deployment.yaml"
               sh "cat service/sendmsg-deployment.yaml"
               sh "git config user.name 'Lab00700'"
