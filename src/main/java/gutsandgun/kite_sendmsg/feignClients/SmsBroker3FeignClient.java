@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "smsFeignClient", url = "${feign.url.broker-dummy}", configuration = FeignBrokerConfig.class)
-public interface SmsFeignClient {
+@FeignClient(name = "smsFeignClient", url = "${feign.url.broker-dummy3}", configuration = FeignBrokerConfig.class)
+public interface SmsBroker3FeignClient {
 	@PostMapping("/broker/all/{brokerName}/send/sms")
 	ResponseEntity<Long> sendSms(@PathVariable("brokerName") String name,@RequestBody BrokerMsgDTO brokerMsgDTO);
 

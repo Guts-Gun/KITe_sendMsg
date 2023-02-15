@@ -69,5 +69,9 @@ rabbitmq:
       queue3: LG
 feign:
   url :
-    broker-dummy : gutsandgun.kro.kr:30000
-    sending : gutsandgun.kro.kr:30000
+    broker-dummy1 : https://gutsandgun.kro.kr:45000
+    broker-dummy2 : https://gutsandgun.kro.kr:45001
+    broker-dummy3 : https://gutsandgun.kro.kr:45002
+    sending : https://gutsandgun.kro.kr:30000
+#    broker-dummy: gutsandgun.kro.kr:8081
+#    sending: gutsandgun.kro.kr:8004

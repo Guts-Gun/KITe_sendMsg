@@ -7,7 +7,6 @@ import gutsandgun.kite_sendmsg.dto.log.BrokerResponseLogDTO;
 import gutsandgun.kite_sendmsg.dto.log.MissingSendingIdLogDTO;
 import gutsandgun.kite_sendmsg.dto.sendMsg.BrokerMsgDTO;
 import gutsandgun.kite_sendmsg.dto.sendMsg.ReplaceSendingBodyDTO;
-import gutsandgun.kite_sendmsg.dto.sendMsg.SendManagerMsgDTO;
 import gutsandgun.kite_sendmsg.dto.sendMsg.SendMsgProceessingDTO;
 import gutsandgun.kite_sendmsg.entity.read.Broker;
 import gutsandgun.kite_sendmsg.entity.read.Sending;
@@ -15,7 +14,9 @@ import gutsandgun.kite_sendmsg.exception.ConsumerException;
 import gutsandgun.kite_sendmsg.exception.CustomException;
 import gutsandgun.kite_sendmsg.exception.ErrorCode;
 import gutsandgun.kite_sendmsg.feignClients.SendingFeignClient;
-import gutsandgun.kite_sendmsg.feignClients.SmsFeignClient;
+import gutsandgun.kite_sendmsg.feignClients.SmsBroker1FeignClient;
+import gutsandgun.kite_sendmsg.feignClients.SmsBroker2FeignClient;
+import gutsandgun.kite_sendmsg.feignClients.SmsBroker3FeignClient;
 import gutsandgun.kite_sendmsg.repository.read.ReadBrokerRepository;
 import gutsandgun.kite_sendmsg.repository.read.ReadSendingRepository;
 import gutsandgun.kite_sendmsg.type.FailReason;
@@ -52,7 +53,11 @@ public class SendingService {
 
     //api
     @Autowired
-    private SmsFeignClient smsFeignClient;
+    private SmsBroker1FeignClient smsBroker1FeignClient;
+    @Autowired
+    private SmsBroker2FeignClient smsBroker2FeignClient;
+    @Autowired
+    private SmsBroker3FeignClient smsBroker3FeignClient;
     @Autowired
     private SendingFeignClient sendingFeignClient;
 
@@ -121,7 +126,7 @@ public class SendingService {
                 log.info("4. Send broker: {}",sendMsgProceessingDTO.getBrokerMsgDTO());
                 BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(sendMsgProceessingDTO.getBrokerId(),sendMsgProceessingDTO);
                 log.info("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
-                ResponseEntity<Long> response = smsFeignClient.sendSms(msgBroker.get(sendMsgProceessingDTO.getBrokerId()),sendMsgProceessingDTO.getBrokerMsgDTO());
+                ResponseEntity<Long> response = sendBrokerApi(sendMsgProceessingDTO.getBrokerId(),sendMsgProceessingDTO.getBrokerMsgDTO());
             }
             catch (CustomException e){
                 log.info("*******************************************");
@@ -179,7 +184,7 @@ public class SendingService {
                         log.info("대체발송 중계사: {}번-{}", b.getId(),msgBroker.get(b.getId()));
                         BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(),sendMsgProceessingDTO);
                         log.info("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
-                        ResponseEntity<Long> response = smsFeignClient.sendSms(msgBroker.get(b.getId()),sendMsgProceessingDTO.getBrokerMsgDTO());
+                        ResponseEntity<Long> response = sendBrokerApi(sendMsgProceessingDTO.getBrokerId(),sendMsgProceessingDTO.getBrokerMsgDTO());
                     }
                     catch (CustomException e){
                         System.out.println(e);
@@ -210,8 +215,18 @@ public class SendingService {
                 }
             }
         }
-
-            public List<BrokerDTO> getMsgBrokerList(){
+            private ResponseEntity<Long> sendBrokerApi(Long brokerId, BrokerMsgDTO brokerMsgDTO){
+                ResponseEntity<Long> responseEntity = null;
+                if (brokerId == 1L) {
+                    responseEntity=smsBroker1FeignClient.sendSms(msgBroker.get(brokerId),brokerMsgDTO);
+                } else if (brokerId == 2L) {
+                    responseEntity=smsBroker2FeignClient.sendSms(msgBroker.get(brokerId),brokerMsgDTO);
+                } else if (brokerId == 3L) {
+                    responseEntity=smsBroker3FeignClient.sendSms(msgBroker.get(brokerId),brokerMsgDTO);
+                }
+                return responseEntity;
+            }
+            private List<BrokerDTO> getMsgBrokerList(){
                 List<Broker> BrokerList = readBrokerRepository.findBySendingType(SendingType.SMS);
                 List<BrokerDTO> brokerDTOList = new ArrayList<>();
                 BrokerList.forEach(broker -> {
@@ -220,5 +235,4 @@ public class SendingService {
 
                 return brokerDTOList;
             }
-
 }
