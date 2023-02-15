@@ -69,5 +69,5 @@ rabbitmq:
       queue3: LG
 feign:
   url :
-    broker-dummy : localhost:8081
-    sending : localhost:8004
+    broker-dummy : gutsandgun.kro.kr:30000
+    sending : gutsandgun.kro.kr:30000
