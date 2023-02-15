@@ -6,7 +6,6 @@ import gutsandgun.kite_sendmsg.type.SendingType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
@@ -17,8 +16,10 @@ import org.hibernate.annotations.Where;
 @Setter
 @Where(clause = "is_deleted = false")
 @SQLDelete(sql = "UPDATE sending SET is_deleted=true WHERE id = ?")
-@Table(name = "sending")
-@ToString
+@Table(name = "sending",
+		indexes = {
+				@Index(name = "idx_sending_user_id", columnList = "fk_user_id")
+		})
 public class Sending extends BaseTimeEntity {
 
 	@Id
