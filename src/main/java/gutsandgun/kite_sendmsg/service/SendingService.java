@@ -64,7 +64,7 @@ public class SendingService {
     public void sendMsgProcessing(Long brokerId,SendMsgProceessingDTO sendMsgProceessingDTO){
         try{
             //2.sending 정보 얻기
-            sendMsgProceessingDTO.setSendingDto(getSendingToDto(sendMsgProceessingDTO.getSendingId()));
+            sendMsgProceessingDTO.setSendingDto(getSendingDto(sendMsgProceessingDTO.getSendingId()));
             log.info("-----------------------------");
             //3.broker msg만들기 (with msg 처리)
             sendMsgProceessingDTO.setBrokerMsgDTO();
@@ -101,26 +101,33 @@ public class SendingService {
         }
     }
 
-        @Cacheable(value="test" , key = "#id" ,cacheManager = "redisCacheManager")
-        public SendingDto getSendingToDto(Long id){
-            //with log
-
-            long beforeTime = System.currentTimeMillis();
-
-            Sending sending = readSendingRepository.findById(id).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
+        private SendingDto getSendingDto(Long sendingId){
+            Sending sending = getSending(sendingId);
             SendingDto sendingDto = new SendingDto(sending);
-
-            long afterTime = System.currentTimeMillis();
-            long secDiffTime = (afterTime - beforeTime);
-            log.info("2. getSendingDto :{} :",sendingDto.toString());
-            log.info("처리 속도(using cache) : "+secDiffTime);
-
             return sendingDto;
         }
 
+            @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
+            public Sending getSending(Long sendingId){
+                //with log
+
+                long beforeTime = System.currentTimeMillis();
+
+                Sending sending = readSendingRepository.findById(sendingId).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
+                long afterTime = System.currentTimeMillis();
+                long secDiffTime = (afterTime - beforeTime);
+                log.info("2. getSending :{} :",sending.toString());
+                log.info("처리 속도(using cache) : "+secDiffTime);
+
+                return sending;
+            }
 
 
-        public BrokerResponseLogDTO sendBroker(SendMsgProceessingDTO sendMsgProceessingDTO){
+
+
+
+
+    public BrokerResponseLogDTO sendBroker(SendMsgProceessingDTO sendMsgProceessingDTO){
             BrokerResponseLogDTO brokerResponseLogDTO = null;
             try {
                 log.info("4. Send broker: {}",sendMsgProceessingDTO.getBrokerMsgDTO());
