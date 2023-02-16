@@ -23,10 +23,6 @@ import java.util.Map;
 @EnableCaching
 @Configuration
 public class RedisConfig {
-    private @Value("${spring.redis.host}") String redisHost;
-    private @Value("${spring.redis.port}") int redisPort;
-
-
     @Bean
     public CacheManager CacheManager(RedisConnectionFactory cf) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
