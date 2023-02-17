@@ -47,9 +47,6 @@ public class SendingService {
 
     //repo
     @Autowired
-    ReadSendingRepository readSendingRepository;
-
-    @Autowired
     ReadBrokerRepository readBrokerRepository;
 
     //api
@@ -64,11 +61,14 @@ public class SendingService {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    SendingCache sendingCache;
+
 
     public void sendMsgProcessing(Long brokerId,SendMsgProceessingDTO sendMsgProceessingDTO){
         try{
             //2.sending 정보 얻기
-            sendMsgProceessingDTO.setSendingDto(objectMapper.readValue(getSendingDto(sendMsgProceessingDTO.getSendingId()), SendingDto.class));
+            sendMsgProceessingDTO.setSendingDto(objectMapper.readValue(sendingCache.getSendingDto(sendMsgProceessingDTO.getSendingId()), SendingDto.class));
             log.info("-----------------------------");
             //3.broker msg만들기 (with msg 처리)
             sendMsgProceessingDTO.setBrokerMsgDTO();
@@ -115,20 +115,6 @@ public class SendingService {
 
     }
 
-        @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
-        public String getSendingDto(Long sendingId) throws JsonProcessingException {
-            Sending sending = getSending(sendingId);
-            log.info("2. getSending :{} :",sending.toString());
-            SendingDto sendingDto = new SendingDto(sending);
-            String sendingDtoStr = objectMapper.writeValueAsString(sendingDto);
-            return sendingDtoStr;
-        }
-            public Sending getSending(Long sendingId){
-                //with log
-                Sending sending = readSendingRepository.findById(sendingId).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
-                log.info("!GetSending in db :{} :",sending.toString());
-                return sending;
-            }
 
 
 
