@@ -118,21 +118,15 @@ public class SendingService {
         @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
         public String getSendingDto(Long sendingId) throws JsonProcessingException {
             Sending sending = getSending(sendingId);
+            log.info("2. getSending :{} :",sending.toString());
             SendingDto sendingDto = new SendingDto(sending);
             String sendingDtoStr = objectMapper.writeValueAsString(sendingDto);
             return sendingDtoStr;
         }
             public Sending getSending(Long sendingId){
                 //with log
-
-                long beforeTime = System.currentTimeMillis();
-
                 Sending sending = readSendingRepository.findById(sendingId).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
-                long afterTime = System.currentTimeMillis();
-                long secDiffTime = (afterTime - beforeTime);
-                log.info("2. getSending :{} :",sending.toString());
-                log.info("처리 속도(using cache) : "+secDiffTime);
-
+                log.info("!GetSending in db :{} :",sending.toString());
                 return sending;
             }
 
