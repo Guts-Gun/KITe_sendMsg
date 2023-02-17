@@ -1,5 +1,6 @@
 package gutsandgun.kite_sendmsg.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gutsandgun.kite_sendmsg.dto.*;
 import gutsandgun.kite_sendmsg.dto.log.BrokerRequestLogDTO;
@@ -61,10 +62,13 @@ public class SendingService {
     @Autowired
     private SendingFeignClient sendingFeignClient;
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
+
     public void sendMsgProcessing(Long brokerId,SendMsgProceessingDTO sendMsgProceessingDTO){
         try{
             //2.sending 정보 얻기
-            sendMsgProceessingDTO.setSendingDto(getSendingDto(sendMsgProceessingDTO.getSendingId()));
+            sendMsgProceessingDTO.setSendingDto(objectMapper.readValue(getSendingDto(sendMsgProceessingDTO.getSendingId()), SendingDto.class));
             log.info("-----------------------------");
             //3.broker msg만들기 (with msg 처리)
             sendMsgProceessingDTO.setBrokerMsgDTO();
@@ -98,16 +102,26 @@ public class SendingService {
                 System.out.println("log: " + missingSendingIdLogDTO.toString());
             }
             log.info("*******************************************");
+        } catch (JsonProcessingException e) {
+            log.info("*******************************************");
+            if(e.getMessage().equals(ConsumerException.ERROR_DB)) {
+                log.info("ERROR : sending 정보 DB 에 없음2 (parsing error)");
+                MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendMsgProceessingDTO);
+                System.out.println("log: " + missingSendingIdLogDTO.toString());
+            }
+            log.info("*******************************************");
+
         }
+
     }
 
         @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
-        private SendingDto getSendingDto(Long sendingId){
+        public String getSendingDto(Long sendingId) throws JsonProcessingException {
             Sending sending = getSending(sendingId);
             SendingDto sendingDto = new SendingDto(sending);
-            return sendingDto;
+            String sendingDtoStr = objectMapper.writeValueAsString(sendingDto);
+            return sendingDtoStr;
         }
-
             public Sending getSending(Long sendingId){
                 //with log
 
