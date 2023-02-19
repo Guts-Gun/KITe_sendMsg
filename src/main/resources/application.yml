@@ -64,6 +64,10 @@ rabbitmq:
       queue1: SKT
       queue2: KT
       queue3: LG
+      log: LogQueue
+  log:
+    name: LogQueue
+    exchange: Log-exchange
 feign:
   url :
     broker-dummy1 : https://gutsandgun.kro.kr:45000
