@@ -18,6 +18,7 @@ import gutsandgun.kite_sendmsg.feignClients.SendingFeignClient;
 import gutsandgun.kite_sendmsg.feignClients.SmsBroker1FeignClient;
 import gutsandgun.kite_sendmsg.feignClients.SmsBroker2FeignClient;
 import gutsandgun.kite_sendmsg.feignClients.SmsBroker3FeignClient;
+import gutsandgun.kite_sendmsg.publisher.RabbitMQProducer;
 import gutsandgun.kite_sendmsg.repository.read.ReadBrokerRepository;
 import gutsandgun.kite_sendmsg.repository.read.ReadSendingRepository;
 import gutsandgun.kite_sendmsg.type.FailReason;
@@ -64,6 +65,8 @@ public class SendingService {
     @Autowired
     SendingCache sendingCache;
 
+    @Autowired
+    private RabbitMQProducer rabbitMQProducer;
 
     public void sendMsgProcessing(Long brokerId,SendMsgProceessingDTO sendMsgProceessingDTO){
         try{
