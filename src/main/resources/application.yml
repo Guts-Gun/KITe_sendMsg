@@ -2,6 +2,9 @@ server:
   port: 8021
 spring:
   rabbitmq:
+    listener:
+      simple:
+        prefetch: 50
     host: gutsandgun.kro.kr
     port: 11005
     username: gutsandgun
