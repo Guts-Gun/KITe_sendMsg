@@ -21,8 +21,8 @@ public class FeignBrokerError implements ErrorDecoder {
 
         switch (response.status()) {
             case 400:
-                log.info("borker response 에러");
-                log.info(String.valueOf(response.status()));
+                //log.info("borker response 에러");
+                //log.info(String.valueOf(response.status()));
 
                 BrokerResponseErrorDto message = null;
                 try (InputStream bodyIs = response.body()
@@ -32,17 +32,17 @@ public class FeignBrokerError implements ErrorDecoder {
                 } catch (IOException e) {
                     return new Exception(e.getMessage());
                 }
-                log.info(message.toString());
+                //log.info(message.toString());
                 for(ErrorCode c : ErrorCode.values()){
                     if(message.getCode().equals(c.getCode())){
-                        log.info("error code : {}" , c.getCode());
+                        //log.info("error code : {}" , c.getCode());
                         return new CustomException(c);
                     }
                 }
             default :
-                log.info("그 외 오류");
-                log.info(String.valueOf(response.status()));
-                log.info(String.valueOf(response));
+                //log.info("그 외 오류");
+                //log.info(String.valueOf(response.status()));
+                //log.info(String.valueOf(response));
                 return new CustomException(ErrorCode.BAD_REQUEST);
         }
     }
