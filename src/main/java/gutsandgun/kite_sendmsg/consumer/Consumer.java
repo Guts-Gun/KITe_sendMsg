@@ -23,7 +23,7 @@ public class Consumer {
     private SendingService sendingService;
 
     // SKT
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue1}")
+    @RabbitListener(queues = "${rabbitmq.routing.key.queue1}", concurrency = "3")
     public void consumeSKT(SendManagerMsgDTO sendManagerMsgDTO){
         Long brokerId = 1L;
         log.info("============================");
@@ -39,7 +39,7 @@ public class Consumer {
     }
 
     // KT
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue2}")
+    @RabbitListener(queues = "${rabbitmq.routing.key.queue2}", concurrency = "3")
     public void consumeKT(SendManagerMsgDTO sendManagerMsgDTO){
         Long brokerId = 2L;
         log.info("============================");
@@ -55,7 +55,7 @@ public class Consumer {
     }
 
     // LG
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue3}")
+    @RabbitListener(queues = "${rabbitmq.routing.key.queue3}", concurrency = "3")
     public void consumeLG(SendManagerMsgDTO sendManagerMsgDTO){
         Long brokerId = 3L;
         log.info("============================");
