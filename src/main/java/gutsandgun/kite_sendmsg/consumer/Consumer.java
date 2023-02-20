@@ -14,6 +14,10 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Component
 public class Consumer {
     private static final Logger log = LoggerFactory.getLogger(Consumer.class);
@@ -22,51 +26,56 @@ public class Consumer {
     @Autowired
     private SendingService sendingService;
 
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1000);
+
     // SKT
     @RabbitListener(queues = "${rabbitmq.routing.key.queue1}", concurrency = "3")
     public void consumeSKT(SendManagerMsgDTO sendManagerMsgDTO){
+        log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 1L;
-        log.info("============================");
+        //log.info("============================");
         //1.rabbitmq consumer - sendManager msg
-        log.info("1. SKT message: {}",sendManagerMsgDTO);
-        log.info("-----------------------------");
+        //log.info("1. SKT message: {}",sendManagerMsgDTO);
+        //log.info("-----------------------------");
 
         SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
-        sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO);
+        executorService.submit(() ->sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO));
 
-        log.info("============================");
+        //log.info("============================");
 
     }
 
     // KT
     @RabbitListener(queues = "${rabbitmq.routing.key.queue2}", concurrency = "3")
     public void consumeKT(SendManagerMsgDTO sendManagerMsgDTO){
+        log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 2L;
-        log.info("============================");
+        //log.info("============================");
         //1.rabbitmq consumer - sendManager msg
-        log.info("1/ KT message: {}",sendManagerMsgDTO);
-        log.info("-----------------------------");
+        //log.info("1/ KT message: {}",sendManagerMsgDTO);
+        //log.info("-----------------------------");
 
         SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
-        sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO);
+        executorService.submit(() ->sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO));
 
-        log.info("============================");
+        //log.info("============================");
 
     }
 
     // LG
     @RabbitListener(queues = "${rabbitmq.routing.key.queue3}", concurrency = "3")
     public void consumeLG(SendManagerMsgDTO sendManagerMsgDTO){
+        log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 3L;
-        log.info("============================");
+        //log.info("============================");
         //1.rabbitmq consumer - sendManager msg
-        log.info("1. LG message: {}",sendManagerMsgDTO);
-        log.info("-----------------------------");
+        //log.info("1. LG message: {}",sendManagerMsgDTO);
+        //log.info("-----------------------------");
 
         SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
-        sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO);
+        executorService.submit(() ->sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO));
 
-        log.info("============================");
+        //log.info("============================");
     }
 
 }
