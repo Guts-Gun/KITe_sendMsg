@@ -29,7 +29,7 @@ public class Consumer {
     private final ExecutorService executorService = Executors.newFixedThreadPool(1000);
 
     // SKT
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue1}", concurrency = "3")
+    @RabbitListener(queues = "${rabbitmq.routing.key.queue1}", concurrency = "4")
     public void consumeSKT(SendManagerMsgDTO sendManagerMsgDTO){
         log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 1L;
@@ -46,7 +46,7 @@ public class Consumer {
     }
 
     // KT
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue2}", concurrency = "3")
+    @RabbitListener(queues = "${rabbitmq.routing.key.queue2}", concurrency = "4")
     public void consumeKT(SendManagerMsgDTO sendManagerMsgDTO){
         log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 2L;
@@ -63,7 +63,7 @@ public class Consumer {
     }
 
     // LG
-    @RabbitListener(queues = "${rabbitmq.routing.key.queue3}", concurrency = "3")
+    @RabbitListener(queues = "${rabbitmq.routing.key.queue3}", concurrency = "4")
     public void consumeLG(SendManagerMsgDTO sendManagerMsgDTO){
         log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 3L;
