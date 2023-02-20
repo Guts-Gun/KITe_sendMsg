@@ -25,7 +25,7 @@ public class Consumer {
     @Autowired
     private SendingService sendingService;
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(100);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1000);
 
     // SKT
     @RabbitListener(queues = "${rabbitmq.routing.key.queue1}")
