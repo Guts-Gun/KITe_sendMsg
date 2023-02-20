@@ -2,6 +2,9 @@ server:
   port: 8021
 spring:
   rabbitmq:
+    listener:
+      simple:
+        prefetch: 1
     host: gutsandgun.kro.kr
     port: 11005
     username: gutsandgun
@@ -11,6 +14,14 @@ spring:
 #    username: solbitest
 #    password: solbitest1212!
     virtual-host: gutsandgun
+#  redis:
+#    lettuce:
+#      pool:
+#        max-active: 10
+#        max-idle: 10
+#        min-idle: 2
+#    port: 6379
+#    host: 127.0.0.1
   data:
     redis:
       cluster:
