@@ -30,7 +30,7 @@ public class SendingCache {
     @Cacheable(value="sending" , key = "#sendingId" ,cacheManager = "CacheManager")
     public String getSendingDto(Long sendingId) throws JsonProcessingException {
         Sending sending = getSending(sendingId);
-        //log.info("2. getSending :{} :",sending.toString());
+        log.info("2. getSending :{} :",sending.toString());
         SendingDto sendingDto = new SendingDto(sending);
         String sendingDtoStr = objectMapper.writeValueAsString(sendingDto);
         return sendingDtoStr;
@@ -38,7 +38,7 @@ public class SendingCache {
         public Sending getSending(Long sendingId){
             //with log
             Sending sending = readSendingRepository.findById(sendingId).orElseThrow(()-> new ConsumerException(ConsumerException.ERROR_DB));
-            //log.info("!GetSending in db :{} :",sending.toString());
+            log.info("!GetSending in db :{} :",sending.toString());
             return sending;
         }
 

@@ -39,11 +39,11 @@ public class SendMsgProceessingDTO {
         //1.문자열 치환
         //지금은 이름만 message의 %고객명% 부분에 name넣기
         String content = sendingDto.getContent();
-        //log.info("3. Message: {}",content);
+        log.info("3. Message: {}",content);
         if(sendManagerMsgDTO.getName()!=null){
             content = content.replace("%고객명%", sendManagerMsgDTO.getName());
         }
-        //log.info("문자열 치환: {}",content);
+        log.info("문자열 치환: {}",content);
 
         //2.초과 처리
         //sms일때 sms bytes 수 > 80
@@ -54,7 +54,7 @@ public class SendMsgProceessingDTO {
         if(sendingDto.getSendingType()==SendingType.MMS){
             content = sliceMsg(content,2000);
         }
-        //log.info("초과처리: {}",content);
+        log.info("초과처리: {}",content);
 
         //3. broker msg 만들기
         this.brokerMsgDTO = new BrokerMsgDTO(content,sendingDto,sendManagerMsgDTO);
@@ -79,13 +79,13 @@ public class SendMsgProceessingDTO {
                         charLength += 1;
                     }
                     else{
-                        //log.info("문자 자리수: {}",charLength);
-                        //log.info("문자 bytes: {}",bytes);
+                        log.info("문자 자리수: {}",charLength);
+                        log.info("문자 bytes: {}",bytes);
                         return msg.substring(0,charLength);
                     }
                 }
-                //log.info("문자 자리수: {}",charLength);
-                //log.info("문자 bytes: {}",bytes);
+                log.info("문자 자리수: {}",charLength);
+                log.info("문자 bytes: {}",bytes);
                 return msg;
             }
         }

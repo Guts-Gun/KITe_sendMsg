@@ -33,15 +33,15 @@ public class Consumer {
     public void consumeSKT(SendManagerMsgDTO sendManagerMsgDTO){
         log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 1L;
-        //log.info("============================");
+        log.info("============================");
         //1.rabbitmq consumer - sendManager msg
-        //log.info("1. SKT message: {}",sendManagerMsgDTO);
-        //log.info("-----------------------------");
+        log.info("1. SKT message: {}",sendManagerMsgDTO);
+        log.info("-----------------------------");
 
         SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
         executorService.submit(() ->sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO));
 
-        //log.info("============================");
+        log.info("============================");
 
     }
 
@@ -50,15 +50,15 @@ public class Consumer {
     public void consumeKT(SendManagerMsgDTO sendManagerMsgDTO){
         log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 2L;
-        //log.info("============================");
+        log.info("============================");
         //1.rabbitmq consumer - sendManager msg
-        //log.info("1/ KT message: {}",sendManagerMsgDTO);
-        //log.info("-----------------------------");
+        log.info("1/ KT message: {}",sendManagerMsgDTO);
+        log.info("-----------------------------");
 
         SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
         executorService.submit(() ->sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO));
 
-        //log.info("============================");
+        log.info("============================");
 
     }
 
@@ -67,15 +67,15 @@ public class Consumer {
     public void consumeLG(SendManagerMsgDTO sendManagerMsgDTO){
         log.info("Consume | txId : {} Time : {}",sendManagerMsgDTO.getId(),new Date().getTime());
         Long brokerId = 3L;
-        //log.info("============================");
+        log.info("============================");
         //1.rabbitmq consumer - sendManager msg
-        //log.info("1. LG message: {}",sendManagerMsgDTO);
-        //log.info("-----------------------------");
+        log.info("1. LG message: {}",sendManagerMsgDTO);
+        log.info("-----------------------------");
 
         SendMsgProceessingDTO sendMsgProceessingDTO = new SendMsgProceessingDTO(brokerId,sendManagerMsgDTO);
         executorService.submit(() ->sendingService.sendMsgProcessing(brokerId,sendMsgProceessingDTO));
 
-        //log.info("============================");
+        log.info("============================");
     }
 
 }

@@ -69,11 +69,11 @@ public class SendingService {
             //2.sending 정보 얻기
             SendingDto sendingDto = getSending(sendMsgProceessingDTO);
             if(sendingDto!=null){
-                //log.info("-----------------------------");
+                log.info("-----------------------------");
                 //3.broker msg만들기 (with msg 처리)
                 sendMsgProceessingDTO.setSendingDto(sendingDto);
                 sendMsgProceessingDTO.setBrokerMsgDTO();
-                //log.info("-----------------------------");
+                log.info("-----------------------------");
                 //4.발송
                 BrokerResponseLogDTO brokerResponseLogDTO = sendBroker(sendMsgProceessingDTO);
                 //5.대체발송 (브로커/이메일)
@@ -83,13 +83,13 @@ public class SendingService {
                             alternativeSendBroker(sendMsgProceessingDTO);
                             break;
                         case INVALID_PHONE:
-                            //log.info(sendMsgProceessingDTO.getSendingDto().getReplaceYn());
+                            log.info(sendMsgProceessingDTO.getSendingDto().getReplaceYn());
                             if(sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("Y")){
-                                //log.info("플랫폼 대체 발송 허가");
+                                log.info("플랫폼 대체 발송 허가");
                                 alternativeSendEmail(sendMsgProceessingDTO);
                             }
                             if(sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("N")){
-                                //log.info("플랫폼 대체 발송 X");
+                                log.info("플랫폼 대체 발송 X");
                             }
                             break;
                     }
@@ -105,23 +105,23 @@ public class SendingService {
             return objectMapper.readValue(sendingCache.getSendingDto(sendMsgProceessingDTO.getSendingId()), SendingDto.class);
         }
         catch(ConsumerException e){
-            //log.info("*******************************************");
+            log.info("*******************************************");
             if(e.getMessage().equals(ConsumerException.ERROR_DB)) {
-                //log.info("ERROR : sending 정보 DB 에 없음");
+                log.info("ERROR : sending 정보 DB 에 없음");
                 MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendMsgProceessingDTO);
                 rabbitMQProducer.logSendQueue("log: " + missingSendingIdLogDTO.toString());
-                //log.info("log: " + missingSendingIdLogDTO.toString());
+                log.info("log: " + missingSendingIdLogDTO.toString());
                 return null;
             }
-            //log.info("*******************************************");
+            log.info("*******************************************");
         } catch (JsonProcessingException e) {
-            //log.info("*******************************************");
+            log.info("*******************************************");
             if(e.getMessage().equals(ConsumerException.ERROR_DB)) {
-                //log.info("ERROR : sending 정보 DB 에 없음2 (parsing error)");
+                log.info("ERROR : sending 정보 DB 에 없음2 (parsing error)");
                 MissingSendingIdLogDTO missingSendingIdLogDTO = new MissingSendingIdLogDTO(sendMsgProceessingDTO);
                 rabbitMQProducer.logSendQueue("log: " + missingSendingIdLogDTO.toString());
             }
-            //log.info("*******************************************");
+            log.info("*******************************************");
             return null;
         }
         return null;
@@ -130,15 +130,15 @@ public class SendingService {
 
     public BrokerResponseLogDTO sendBroker(SendMsgProceessingDTO sendMsgProceessingDTO){
             BrokerResponseLogDTO brokerResponseLogDTO = null;
-            //log.info("4. Send broker: {}",sendMsgProceessingDTO.getBrokerMsgDTO());
+            log.info("4. Send broker: {}",sendMsgProceessingDTO.getBrokerMsgDTO());
             BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(sendMsgProceessingDTO.getBrokerId(),sendMsgProceessingDTO);
             rabbitMQProducer.logSendQueue("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
             try {
-                //log.info("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
+                log.info("broker[초기발송] request log: "+ brokerRequestLogDTO.toString());
                 ResponseEntity<Long> response = sendBrokerApi(sendMsgProceessingDTO.getBrokerId(),sendMsgProceessingDTO.getBrokerMsgDTO());
             }
             catch (CustomException e){
-                //log.info("*******************************************");
+                log.info("*******************************************");
                 //System.out.println("ERROR : BROKER - " + e.getErrorCode());
                 brokerResponseLogDTO = new BrokerResponseLogDTO(sendMsgProceessingDTO.getBrokerId(), SendingStatus.FAIL,sendMsgProceessingDTO);
                 if(e.getErrorCode() == ErrorCode.BAD_REQUEST){
@@ -153,35 +153,35 @@ public class SendingService {
                     //other오류도 처리해야하는지?
                 }
                 rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
-                //log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
-                //log.info("*******************************************");
+                log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                log.info("*******************************************");
             }
             finally {
                 if(brokerResponseLogDTO==null){
                     brokerResponseLogDTO = new BrokerResponseLogDTO(sendMsgProceessingDTO.getBrokerId(), SendingStatus.COMPLETE,sendMsgProceessingDTO);
                     rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
-                    //log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                    log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 }
             }
-            //log.info("-----------------------------");
+            log.info("-----------------------------");
             return brokerResponseLogDTO;
         }
 
         public void alternativeSendEmail(SendMsgProceessingDTO sendMsgProceessingDTO){
             ReplaceSendingBodyDTO replaceSendingBodyDTO = new ReplaceSendingBodyDTO(sendMsgProceessingDTO.getSendingId(),sendMsgProceessingDTO.getTxId());
-            //log.info("5-1. 이메일 대체발송");
-            //log.info("api[대체발송] request: {}",replaceSendingBodyDTO);
+            log.info("5-1. 이메일 대체발송");
+            log.info("api[대체발송] request: {}",replaceSendingBodyDTO);
             ResponseEntity<String> response = sendingFeignClient.sendSms(replaceSendingBodyDTO);
-            //log.info("api[대체발송] response: {}",response.getStatusCode());
+            log.info("api[대체발송] response: {}",response.getStatusCode());
         }
         public void alternativeSendBroker(SendMsgProceessingDTO sendMsgProceessingDTO){
-            //log.info("5-2. 중계사 대체발송");
+            log.info("5-2. 중계사 대체발송");
 
             //broker 정보 가져오기
             List<BrokerDTO> brokerDTOList = getMsgBrokerList();
             ArrayList<Boolean> brokerResponseList = new ArrayList<Boolean>();
-            //log.info("brokerList:{}",brokerDTOList);
-            //log.info("-----------------------------");
+            log.info("brokerList:{}",brokerDTOList);
+            log.info("-----------------------------");
 
             //대체 발송 처리(sending queue)
             for (BrokerDTO b : brokerDTOList){
@@ -192,14 +192,14 @@ public class SendingService {
                 else{
                     Boolean alternativeBrokerSuccess = true;
                     try{
-                        //log.info("대체발송 중계사: {}번-{}", b.getId(),msgBroker.get(b.getId()));
+                        log.info("대체발송 중계사: {}번-{}", b.getId(),msgBroker.get(b.getId()));
                         BrokerRequestLogDTO brokerRequestLogDTO = new BrokerRequestLogDTO(b.getId(),sendMsgProceessingDTO);
                         rabbitMQProducer.logSendQueue("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
                         ResponseEntity<Long> response = sendBrokerApi(sendMsgProceessingDTO.getBrokerId(),sendMsgProceessingDTO.getBrokerMsgDTO());
                     }
                     catch (CustomException e){
                         //System.out.println(e);
-                        //log.info("*******************************************");
+                        log.info("*******************************************");
                         //System.out.println("ERROR : BROKER - " + e.getErrorCode());
                         alternativeBrokerSuccess = false;
                         BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(), SendingStatus.FAIL,sendMsgProceessingDTO);
@@ -210,7 +210,7 @@ public class SendingService {
                             brokerResponseLogDTO.setFailReason(FailReason.INVALID_PHONE);
                         }
                         rabbitMQProducer.logSendQueue("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
-                        //log.info("*******************************************");
+                        log.info("*******************************************");
                     }
                     finally {
                         if(alternativeBrokerSuccess){
