@@ -77,7 +77,7 @@ public class SendingService {
                 //4.발송
                 BrokerResponseLogDTO brokerResponseLogDTO = sendBroker(sendMsgProceessingDTO);
                 //5.대체발송 (브로커/이메일)
-                if(brokerResponseLogDTO.isSuccess()){
+                if(brokerResponseLogDTO.isSuccess()==false){
                     switch (brokerResponseLogDTO.getFailReason()){
                         case BAD_REQUEST :
                             alternativeSendBroker(sendMsgProceessingDTO);
