@@ -77,7 +77,7 @@ public class SendingService {
                 //4.발송
                 BrokerResponseLogDTO brokerResponseLogDTO = sendBroker(sendMsgProceessingDTO);
                 //5.대체발송 (브로커/이메일)
-                if(brokerResponseLogDTO.getSuccess().equals(SendingStatus.FAIL)){
+                if(brokerResponseLogDTO.isSuccess()){
                     switch (brokerResponseLogDTO.getFailReason()){
                         case BAD_REQUEST :
                             alternativeSendBroker(sendMsgProceessingDTO);
@@ -140,7 +140,7 @@ public class SendingService {
             catch (CustomException e){
                 log.info("*******************************************");
                 //System.out.println("ERROR : BROKER - " + e.getErrorCode());
-                brokerResponseLogDTO = new BrokerResponseLogDTO(sendMsgProceessingDTO.getBrokerId(), SendingStatus.FAIL,sendMsgProceessingDTO);
+                brokerResponseLogDTO = new BrokerResponseLogDTO(sendMsgProceessingDTO.getBrokerId(), false,sendMsgProceessingDTO);
                 if(e.getErrorCode() == ErrorCode.BAD_REQUEST){
                     //1. 브로커 오류
                     brokerResponseLogDTO.setFailReason(FailReason.BAD_REQUEST);
@@ -158,7 +158,7 @@ public class SendingService {
             }
             finally {
                 if(brokerResponseLogDTO==null){
-                    brokerResponseLogDTO = new BrokerResponseLogDTO(sendMsgProceessingDTO.getBrokerId(), SendingStatus.COMPLETE,sendMsgProceessingDTO);
+                    brokerResponseLogDTO = new BrokerResponseLogDTO(sendMsgProceessingDTO.getBrokerId(), true,sendMsgProceessingDTO);
                     rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                     log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 }
@@ -202,7 +202,7 @@ public class SendingService {
                         log.info("*******************************************");
                         //System.out.println("ERROR : BROKER - " + e.getErrorCode());
                         alternativeBrokerSuccess = false;
-                        BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(), SendingStatus.FAIL,sendMsgProceessingDTO);
+                        BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(), false,sendMsgProceessingDTO);
                         if(e.getErrorCode() == ErrorCode.BAD_REQUEST){
                             brokerResponseLogDTO.setFailReason(FailReason.BAD_REQUEST);
                         }
@@ -215,7 +215,7 @@ public class SendingService {
                     finally {
                         if(alternativeBrokerSuccess){
                             brokerResponseList.add(true);
-                            BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(),SendingStatus.COMPLETE,sendMsgProceessingDTO);
+                            BrokerResponseLogDTO brokerResponseLogDTO = new BrokerResponseLogDTO(b.getId(),true,sendMsgProceessingDTO);
                             rabbitMQProducer.logSendQueue("broker[대체발송] response log: "+ brokerResponseLogDTO.toString());
                             break;
                         }

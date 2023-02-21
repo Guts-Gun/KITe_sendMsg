@@ -7,15 +7,18 @@ import gutsandgun.kite_sendmsg.type.FailReason;
 import gutsandgun.kite_sendmsg.type.SendingStatus;
 import gutsandgun.kite_sendmsg.type.SendingType;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Data
+@Getter
 public class BrokerResponseLogDTO {
     String Service = "Send";
     String type = "receiveBroker";
 
-    SendingStatus success;
+    boolean success;
     FailReason failReason;
 
     Long sendingId;
@@ -26,7 +29,7 @@ public class BrokerResponseLogDTO {
     Long time = new Date().getTime();
 
     //객체 용
-    public BrokerResponseLogDTO( Long brokerId, SendingStatus success, SendMsgProceessingDTO sendMsgProceessingDTO){
+    public BrokerResponseLogDTO( Long brokerId, boolean success, SendMsgProceessingDTO sendMsgProceessingDTO){
         this.success = success;
         this.brokerId = brokerId;
 
@@ -52,7 +55,6 @@ public class BrokerResponseLogDTO {
                 ", time: " + time +
                 "@";
     }
-
 
 
 }
