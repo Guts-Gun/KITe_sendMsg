@@ -213,7 +213,7 @@ public class SendingService {
                         brokerSendingCount+=1;
                         rabbitMQProducer.logSendQueue("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
                         log.info("broker[대체발송] request: "+ brokerRequestLogDTO.toString());
-                        ResponseEntity<Long> response = sendBrokerApi(sendMsgProceessingDTO.getBrokerId(),sendMsgProceessingDTO.getBrokerMsgDTO());
+                        ResponseEntity<Long> response = sendBrokerApi(b.getId(),sendMsgProceessingDTO.getBrokerMsgDTO());
                     }
                     catch (CustomException e){
                         //System.out.println(e);
