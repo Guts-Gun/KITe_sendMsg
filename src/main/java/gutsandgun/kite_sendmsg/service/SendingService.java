@@ -82,6 +82,7 @@ public class SendingService {
                         case BAD_REQUEST :
                             rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                             log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                            log.info("*******************************************");
                             alternativeSendBroker(sendMsgProceessingDTO);
                             break;
                         case INVALID_PHONE:
@@ -90,6 +91,7 @@ public class SendingService {
                                 log.info("플랫폼 대체 발송 허가");
                                 rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                                 log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                                log.info("*******************************************");
                                 alternativeSendEmail(sendMsgProceessingDTO);
                             }
                             if(sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("N")){
@@ -97,6 +99,7 @@ public class SendingService {
                                 brokerResponseLogDTO.setLast(true);
                                 rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                                 log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                                log.info("*******************************************");
                             }
                             break;
                     }
