@@ -19,9 +19,13 @@ public class BrokerRequestLogDTO {
     Long brokerId;
     Long TXId;
 
-    Long time = new Date().getTime();
+    String sender;
+
+    String receiver;
 
     String content;
+
+    Long time = new Date().getTime();
 
     //객체 용
     public BrokerRequestLogDTO( Long brokerId,SendMsgProceessingDTO sendMsgProceessingDTO){
@@ -30,6 +34,9 @@ public class BrokerRequestLogDTO {
         this.sendingId = sendMsgProceessingDTO.getSendingId();
         this.sendingType = sendMsgProceessingDTO.getSendingType();
         this.TXId = sendMsgProceessingDTO.getTxId();
+
+        this.sender = sendMsgProceessingDTO.getBrokerMsgDTO().getSender();
+        this.receiver =sendMsgProceessingDTO.getBrokerMsgDTO().getReceiver();
         this.content = sendMsgProceessingDTO.getBrokerMsgDTO().getContent();
     }
 
@@ -41,6 +48,9 @@ public class BrokerRequestLogDTO {
                 ", sendingType: " + sendingType +
                 ", brokerId: " + brokerId +
                 ", TXId: " + TXId +
+                ", sender: " + sender +
+                ", receiver: " + receiver +
+                ", content: " + content +
                 ", time: " + time +
                 "@";
     }

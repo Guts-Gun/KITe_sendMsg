@@ -18,7 +18,7 @@ public class BrokerResponseLogDTO {
     String Service = "Send";
     String type = "receiveBroker";
 
-    boolean success;
+    SendingStatus success;
     FailReason failReason;
 
     Long sendingId;
@@ -26,10 +26,12 @@ public class BrokerResponseLogDTO {
     Long brokerId;
     Long TXId;
 
+    Boolean last = false;
+
     Long time = new Date().getTime();
 
     //객체 용
-    public BrokerResponseLogDTO( Long brokerId, boolean success, SendMsgProceessingDTO sendMsgProceessingDTO){
+    public BrokerResponseLogDTO( Long brokerId, SendingStatus success, SendMsgProceessingDTO sendMsgProceessingDTO){
         this.success = success;
         this.brokerId = brokerId;
 
@@ -42,6 +44,10 @@ public class BrokerResponseLogDTO {
         this.failReason = failReason;
     }
 
+
+    public void setLast(Boolean bool){
+        this.last = last;
+    }
     @Override
     public String toString() {
         return  "Service: " + Service +
@@ -52,6 +58,7 @@ public class BrokerResponseLogDTO {
                 ", sendingType: " + sendingType +
                 ", brokerId: " + brokerId +
                 ", TXId: " + TXId +
+                ", last: " + last +
                 ", time: " + time +
                 "@";
     }
