@@ -80,6 +80,8 @@ public class SendingService {
                 if(brokerResponseLogDTO.getSuccess().equals(SendingStatus.FAIL)){
                     switch (brokerResponseLogDTO.getFailReason()){
                         case BAD_REQUEST :
+                            rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
+                            log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                             alternativeSendBroker(sendMsgProceessingDTO);
                             break;
                         case INVALID_PHONE:
