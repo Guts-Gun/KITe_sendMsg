@@ -83,6 +83,7 @@ public class SendingService {
                             rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                             log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                             log.info("*******************************************");
+                            log.info("-----------------------------");
                             alternativeSendBroker(sendMsgProceessingDTO);
                             break;
                         case INVALID_PHONE:
@@ -92,6 +93,7 @@ public class SendingService {
                                 rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                                 log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                                 log.info("*******************************************");
+                                log.info("-----------------------------");
                                 alternativeSendEmail(sendMsgProceessingDTO);
                             }
                             if(sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("N")){
@@ -100,6 +102,7 @@ public class SendingService {
                                 rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                                 log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                                 log.info("*******************************************");
+                                log.info("-----------------------------");
                             }
                             break;
                     }
@@ -107,6 +110,7 @@ public class SendingService {
                 else{
                     rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
                     log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
+                    log.info("-----------------------------");
                 }
             }
     }
