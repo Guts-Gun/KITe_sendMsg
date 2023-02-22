@@ -45,7 +45,7 @@ public class BrokerResponseLogDTO {
     }
 
 
-    public void setLast(Boolean bool){
+    public void setLast(Boolean last){
         this.last = last;
     }
     @Override
