@@ -86,13 +86,22 @@ public class SendingService {
                             log.info(sendMsgProceessingDTO.getSendingDto().getReplaceYn());
                             if(sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("Y")){
                                 log.info("플랫폼 대체 발송 허가");
+                                rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
+                                log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                                 alternativeSendEmail(sendMsgProceessingDTO);
                             }
                             if(sendMsgProceessingDTO.getSendingDto().getReplaceYn().equals("N")){
                                 log.info("플랫폼 대체 발송 X");
+                                brokerResponseLogDTO.setLast(true);
+                                rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
+                                log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                             }
                             break;
                     }
+                }
+                else{
+                    rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
+                    log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 }
             }
     }
@@ -153,16 +162,11 @@ public class SendingService {
                 else{
                     //other오류도 처리해야하는지?
                 }
-                rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
-                log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
-                log.info("*******************************************");
             }
             finally {
                 if(brokerResponseLogDTO==null){
                     brokerResponseLogDTO = new BrokerResponseLogDTO(sendMsgProceessingDTO.getBrokerId(), SendingStatus.COMPLETE,sendMsgProceessingDTO);
                     brokerResponseLogDTO.setLast(true);
-                    rabbitMQProducer.logSendQueue("broker[초기발송] response log: "+brokerResponseLogDTO.toString());
-                    log.info("broker[초기발송] response log: "+ brokerResponseLogDTO.toString());
                 }
             }
             log.info("-----------------------------");
@@ -185,13 +189,12 @@ public class SendingService {
             log.info("brokerList:{}",brokerDTOList);
             log.info("-----------------------------");
 
-            int brokerSendingCount = 0;
+            int brokerSendingCount = 1;
             //대체 발송 처리(sending queue)
             for (BrokerDTO b : brokerDTOList){
                 //최초발송 false처리
                 if(sendMsgProceessingDTO.getBrokerId() == b.getId()){
                     brokerResponseList.add(false);
-                    brokerSendingCount+=1;
                 }
                 else{
                     Boolean alternativeBrokerSuccess = true;
